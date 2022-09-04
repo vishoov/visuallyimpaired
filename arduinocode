@@ -1,0 +1,65 @@
+#include <Servo.h>
+Servo myservo;
+#define trigpin 2
+#define echopin 3
+#define m11 11
+#define m12 12
+int pos = 50;
+int c;//speed of sound
+int H;// percentage humidity
+int T;// temperature
+void setup() {
+pinMode(trigpin,OUTPUT);
+pinMode(echopin,INPUT);
+Serial.begin(9600);
+myservo.attach(9);
+pinMode(m11,OUTPUT);
+pinMode(m12,OUTPUT);
+}
+void loop() {
+for(pos = 50; pos <= 110; pos += 3){
+myservo.write(pos);
+Serial.print("obstacle location = ");
+delayMicroseconds(50);
+Serial.print(distance());
+Serial.print("cm , ");
+Serial.print(pos);
+Serial.print("°");
+Serial.println();
+delay(50);
+}
+for(pos = 110; pos >= 50; pos -= 3){
+myservo.write(pos);
+if( distance() <= 100){
+digitalWrite(m12,HIGH);
+digitalWrite(m11,LOW);
+delay(distance()*25);
+digitalWrite(m12,LOW);
+digitalWrite(m11,LOW);
+delay(distance()*25);
+}
+Serial.print("obstacle location = ");
+delayMicroseconds(50);
+Serial.print(distance());
+Serial.print("cm , ");
+Serial.print(pos);
+Serial.print("°");
+Serial.println();
+delay(50);
+}
+}
+float distance(){
+float distance;
+float duration;
+digitalWrite(trigpin,LOW);
+delayMicroseconds(2);
+digitalWrite(trigpin,HIGH);
+delayMicroseconds(10);
+digitalWrite(trigpin,LOW);
+delayMicroseconds(2);
+duration= pulseIn(echopin,HIGH);
+T = 17,H = 59;
+c = 331.4 + (0.606*T) + (0.0124*H) ;
+distance =(c*pow(10,-4))*(duration/2);
+return distance ;
+}
